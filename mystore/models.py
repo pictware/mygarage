@@ -33,10 +33,10 @@ class Item(models.Model):
     number_suffix = models.CharField(max_length=64, default='', blank=True,verbose_name='Suffix of number')
     type = models.ForeignKey('Type', on_delete=models.SET_NULL, null=True, verbose_name='Type of item')
     place = models.ForeignKey('Item', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Where is Item?')
-
+    place_path = models.CharField(max_length=1024, default='', blank=True,verbose_name='Place tree path')
 
     class Meta:
-        ordering = ['pk']
+        ordering = ['place_path']
     def __str__(self):
         return self.full_name()
 
@@ -69,11 +69,33 @@ class Item(models.Model):
         ret = self.text
         return ret
 
+@receiver(pre_save, sender=Item)
+def set_place_path(sender, instance, **kwargs):
+    if instance.pk:
+        old_instance = Item.objects.get(pk=instance.pk)
+        if instance.place:
+            path_format = '%s.%'+getattr(settings, 'MYGARAGE_PATH_FORMAT', '6')+'d'
+            instance.place_path = path_format % (instance.place.place_path, instance.id)
+        else:
+            path_format = '%'+getattr(settings, 'MYGARAGE_PATH_FORMAT', '6')+'d'
+            instance.place_path = path_format % (instance.id)
+        Item.objects.filter(~Q(id=instance.id)).filter(place_path__startswith=old_instance.place_path).\
+        update(place_path=Replace('place_path', Value(old_instance.place_path),Value(instance.place_path)))
+
+@receiver(post_save, sender=Item)
+def create_place_path(sender, instance, created, **kwargs):
+    if created:
+        instance.save()
+        # we need it, cause for new record we'v not had place_path, update and set_place_path will create it
+
+
+
 class Type(models.Model):
-    #Titles of types of your items - "boots","jacket","tool","spare part", etc.
+    # see description below
     name = models.CharField(max_length=64)
+    is_storage = models.BooleanField(default=False, verbose_name="Is it storage?")
     root = models.ForeignKey('Type', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Root of type')
-    root_path = models.CharField(max_length=1024, default='', blank=True,verbose_name='Tree_path')
+    root_path = models.CharField(max_length=1024, default='', blank=True,verbose_name='Tree path')
     number_type = models.CharField(max_length=64, default='', blank=True,verbose_name='Type part of number')
     item_separator = models.CharField(max_length=64, default='-', blank=True,verbose_name='Item separator for number of this type')
     type_separator = models.CharField(max_length=64, default='', blank=True,verbose_name='Separator for prefix of this type')
@@ -126,3 +148,51 @@ def create_root_path(sender, instance, created, **kwargs):
     if created:
         instance.save()
         # we need it, cause for new record we'v not had root_path, update and set_root_path will create it
+
+#class Type
+    # Titles of types of your items - "boots","jackets","tools","spare parts", etc.
+    #     field "is_storage"  = False
+    #
+    # Another kind of types is "storages" - "wardrobes", "racks", "boxes", "cases",
+    #  "bookcases", "shelves". Garage is a storage too.
+    #     field "is_storage"  = True
+    #
+    # Some types may have root parents:
+    #   - for "socks" and "jackets" root is "clothes"
+    #   - for "wheels" and "spare parts" root is "auto"
+    #   - etc.
+    # You can not use a parent root if you do not need it,
+    #  but it may allow to organize the correct search for categories of things.
+    #
+    # ---------------------------------
+    #Example for "garage":
+    # 1 - "the garage", is_storage = True, no root
+    # 2 - "racks", is_storage = True, no root
+    # 3 - "boxes and cases", is_storage = True, no root
+    #
+    # 4 - "clothes", is_storage = False, no root
+    # 5 - "outerwear", is_storage = False, root = "clothes"
+    # 6 - "underwear", is_storage = False, root = "clothes"
+    #
+    # 7 - "boots", is_storage = False, no root
+    #
+    # 8 - "auto", is_storage = False, no root
+    # 9 - "spare parts", is_storage = False, root = "auto"
+    # 10- "tires", is_storage = False, root = "auto"
+    # ...
+    # ---------------------------------
+    #Example for "library":
+    # 1 - "the library", is_storage = True, no root
+    # 2 - "bookcases", is_storage = True, no root
+    # 3 - "shelves", is_storage = True, no root
+    #
+    # 4 - "books", is_storage = False, no root
+    # 5 - "fiction", is_storage = False, root = "books"
+    # 6 - "adventure", is_storage = False, root = "fiction"
+    # 7 - "fantasy", is_storage = False, root = "fiction"
+    # ...
+    # 87- "art & photos", is_storage = False, root = "books"
+    # 88- "architecture", is_storage = False, root = "art & photos"
+    # 89- "art history", is_storage = False, root = "art & photos"
+    # ...
+    # ---------------------------------
