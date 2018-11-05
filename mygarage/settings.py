@@ -118,6 +118,9 @@ USE_L10N = True
 USE_TZ = True
 
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 120960000
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
@@ -125,7 +128,3 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS =[
     TEMPLATE_DIR_MYSTORE,
 ]
-
-
-#Vars for MyGarage
-PREFIX_SUFFIX_SEPARATOR = '-'

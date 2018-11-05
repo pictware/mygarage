@@ -28,6 +28,7 @@ class Item(models.Model):
     #
     #Bags, boxes, shalves are items too :) and the garage too :)))
     name = models.CharField(max_length=64)
+    text = models.CharField(max_length=1024, default='', blank=True, verbose_name='Text')
     layer = models.ForeignKey('Layer', on_delete=models.SET_NULL, null=True, verbose_name='Layer of item')
     number_suffix = models.CharField(max_length=64, default='', blank=True,verbose_name='Suffix of number')
     type = models.ForeignKey('Type', on_delete=models.SET_NULL, null=True, verbose_name='Type of item')
@@ -42,7 +43,7 @@ class Item(models.Model):
     def full_name(self):
         ret = self.name
         number = self.full_number()
-        ret = ret + ' %s' % number if number != '' else ret
+        ret = (ret + ' %s' % number) if number != '' else ret
         return ret
 
     def full_number(self):
@@ -51,6 +52,21 @@ class Item(models.Model):
         if ret != '' and self.number_suffix != '':
             ret += self.type.item_separator
         ret += self.number_suffix
+        return ret
+
+    def full_place(self, wbr=False):
+        ret = ''
+        i = self
+        iterations_count = getattr(settings, 'MYGARAGE_PLACE_MAX_ITERATIONS', 2)
+        place_separator = getattr(settings, 'MYGARAGE_PLACE_SEPARATOR', '\\')
+        while i.place and iterations_count > 0:
+            ret = i.place.full_name() + ((place_separator + ('<wbr>' if wbr else '')) if ret !='' else '') + ret
+            i = i.place
+            iterations_count -= 1
+        return ret
+
+    def full_text(self):
+        ret = self.text
         return ret
 
 class Type(models.Model):
@@ -68,15 +84,18 @@ class Type(models.Model):
     def __str__(self):
         return self.full_name()
 
-    def full_name(self):
+    def full_name(self, wbr=False):
         ret = self.name
         i = self
         iterations_count = getattr(settings, 'MYGARAGE_MAX_ITERATIONS', 2)
         while i.root and iterations_count > 0:
-            ret = i.root.name + i.root.path_separator + ret
+            ret = i.root.name + i.root.path_separator + ('<wbr>' if wbr else '') + ret
             i = i.root
             iterations_count -= 1
         return ret
+
+    def full_name_wbr(self):
+        return self.full_name(wbr=True)
 
     def prefix(self):
         ret = self.number_type

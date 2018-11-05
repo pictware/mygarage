@@ -8,15 +8,28 @@ from .models import Layer, Item, Type
 
 # Create your views here.
 
-class MainList(ListView):
+class CardList(ListView):
     model = Item
-    context_object_name = 'item_none'
     template_name = 'main_cards.html'
 
     def get_queryset(self):
-        return None
+        q=Item.objects.all()
+        return q
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         return context
+
+
+def changemode(request, mode="photo"):
+    if (mode == "list"):
+        request.session['hide_photo'] = False
+        request.session['is_list'] = True
+    elif (mode == "nophoto"):
+        request.session['hide_photo'] = True
+        request.session['is_list'] = False
+    else:
+        request.session['hide_photo'] = False
+        request.session['is_list'] = False
+    return HttpResponseRedirect("/")

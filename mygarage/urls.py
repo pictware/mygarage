@@ -21,6 +21,6 @@ from mystore import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-
-    path('', views.MainList.as_view(),name='home'),
+    path('changemode/<mode>/', views.changemode, name='changemode'),
+    path('', views.CardList.as_view(),name='home'),
 ]

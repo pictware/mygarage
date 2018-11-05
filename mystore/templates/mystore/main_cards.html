@@ -1,31 +1,41 @@
 {% extends "main_strip.html" %}
+{% load html_uni_extras %}
+{% load staticfiles %}
 
 {% block mainblock %}
   <div>
     <div class="container-fluid">
-      <div class="row">
-        <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 px-1 my-2" style="">
+          <div class="row">
+      {% for item in item_list %}
 
-          <div class="card  h-100">
-            <img class="card-img-top mx-auto img-fluid" src="IMG/IMG1.JPG" alt="Card image cap" style="object-fit: cover;width:500px;height:220px;">
-            <div class="card-body p-1">
-              <a href="#" class="card-link">
-                <h5 class="card-title">Руль для автомобиля</h5>
-              </a>
-              <h6 class="card-subtitle text-muted">Одежда/Верхняя</h6>
-              <p class="card-text text-justify">цвет черный размер 38 теплая Nordic</p>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 px-1 my-2">
+
+              <div class="card  h-100">
+                {% if not request.session.hide_photo %}
+                <img class="card-img-top mx-auto img-fluid" src="{% static "IMG/empty.jpg" %}" alt="Card image cap" style="object-fit: cover;width:500px;height:220px;">
+                {% endif %}
+                <div class="card-body p-1">
+                  <a href="#" class="card-link">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                  </a>
+                  <h6 class="card-subtitle text-muted">{{ item.type.full_name_wbr|set_shy }}</h6>
+                  <p class="card-text text-justify">{{ item.full_text }}</p>
+                </div>
+                <div class="card-text text-muted text-right px-1"><small>{{ item.full_number }}</small></div>
+                <div class="card-footer text-muted text-nowrap px-1">
+                  <small><a href="#">
+                      <div style="text-overflow: ellipsis; overflow: hidden; ">
+                        <i class="fas fa-map-marker-alt py-0 px-1"></i>{{ item.full_place }} </div>
+                    </a>
+                  </small>
+                </div>
+              </div>
             </div>
-            <div class="card-text text-muted text-right px-1"><small>OB-001</small></div>
-            <div class="card-footer text-muted text-nowrap px-1">
-              <small><a href="#">
-                  <div style="text-overflow: ellipsis; overflow: hidden; ">
-                    <i class="fas fa-map-marker-alt py-0 px-1"></i>Полка 001/Сумка </div>
-                </a>
-              </small>
-            </div>
+        {% if forloop.counter|divisibleby:"6" %}
           </div>
-        </div>
-
+          <div class="row">
+        {% endif %}
+      {% endfor %}
       </div>
     </div>
   </div>

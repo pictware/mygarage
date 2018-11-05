@@ -4,14 +4,20 @@
 <div class="bg-primary mt-1" >
   <div class="container-fluid mx-0 px-1" >
     <div class="row" >
-      <div class="col-md-12" >
-        <h5 class="m-0" >
+      <div class="col-md-12">
 
-          <span style="vertical-align:middle">Коробки и сумки</span>
-          <small><span class="badge badge-light my-1">123</span></small>
-          <a href="#" class="float-right"><i class="fas fa-list px-1" style="vertical-align: middle"></i></a>
-          <a href="#" class="float-right"><i class="fas fa-grip-horizontal px-1" style="vertical-align: middle"></i></a>
-        </h5>
+          <div style="display:inline-block">
+            <h5 class="m-0 text-nowrap" >
+            <span style="vertical-align:middle">Коробки и сумки</span>
+            <small><span class="badge badge-light my-1">123</span></small>
+            </h5>
+          </div>
+          <div class="float-right" style="display:inline-block">
+            <a href="{% url "changemode" "list" %}" class="float-right"><i class="fas fa-list px-1" style="vertical-align: middle"></i></a>
+            <a href="{% url "changemode" "nophoto" %}" class="float-right"><i class="fas fa-grip-horizontal px-1" style="vertical-align: middle"></i></a>
+            <a href="{% url "changemode" "photo" %}" class="float-right"><i class="far fa-images px-1" style="vertical-align: middle"></i></a>
+          </div>
+
       </div>
     </div>
   </div>
