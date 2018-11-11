@@ -1,10 +1,11 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Layer,Item,Type
+from .models import ColorPalette, Profile, Item,Type
 
-admin.site.register(Layer)
-#admin.site.register(Item)
+
+admin.site.register(ColorPalette)
+admin.site.register(Profile)
 admin.site.register(Type)
 
 @admin.register(Item)

@@ -10,7 +10,7 @@
 
             <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 px-1 my-2">
 
-              <div class="card  h-100">
+              <div class="card  h-100{% if item.type.is_storage %} folder-border{% endif %}" style="overflow: hidden">
                 {% if not request.session.hide_photo %}
                 <img class="card-img-top mx-auto img-fluid" src="{% static "IMG/empty.jpg" %}" alt="Card image cap" style="object-fit: cover;width:500px;height:220px;">
                 {% endif %}
@@ -18,14 +18,29 @@
                   <a href="#" class="card-link">
                     <h5 class="card-title">{{ item.name }}</h5>
                   </a>
-                  <h6 class="card-subtitle text-muted">{{ item.type.full_name_wbr|set_shy }}</h6>
-                  <p class="card-text text-justify">{{ item.full_text }}</p>
+                  <p class="card-subtitle text-muted">{{ item.type.full_name_wbr|set_shy }}</p>
+                  <p class="card-text text-justify"><small>{{ item.full_text }}</small></p>
                 </div>
-                <div class="card-text text-muted text-right px-1"><small>{{ item.full_number }}</small></div>
-                <div class="card-footer text-muted text-nowrap px-1">
+
+                <div class="card-text text-muted px-1" >
+                  {% if item.type.is_storage %}
+                  <div class="float-left m-auto" style="display:inline-block;">
+                    <small>
+                      <!-- <a href="#" class=""><i class="fas fa-list px-1" style="vertical-align: middle"></i></a> -->
+                      <a href="#" class="float-left"><i class="fas fa-plus m-0 px-1"></i></a>
+                      <a href="#" class="float-left"><i class="far fa-folder-open m-0 px-1"></i></a>
+                      <!-- <a class="btn-secondary float-left" href="#" ><i class="fas fa-shoe-prints" style="vertical-align: middle"></i></a> -->
+                    </small>
+                  </div>
+                  {% endif %}
+                  <div class="float-right" style="display:inline-block"><small>{{ item.full_number }}</small></div>
+                </div>
+
+                <div class="card-footer text-muted text-nowrap px-1{% if item.type.is_storage %} folder-background{% endif %}">
                   <small><a href="#">
                       <div style="text-overflow: ellipsis; overflow: hidden; ">
-                        <i class="fas fa-map-marker-alt py-0 px-1"></i>{{ item.full_place }} </div>
+                        <i class="fas fa-map-marker-alt py-0 px-1"></i>{{ item.full_place }}
+                      </div>
                     </a>
                   </small>
                 </div>

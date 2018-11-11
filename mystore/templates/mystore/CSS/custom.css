@@ -1,0 +1,12 @@
+:root {
+  --tertiary: gold;
+}
+
+.folder-background{
+border-color: var(--tertiary);
+background-color: var(--tertiary);
+}
+
+.folder-border{
+border-color: var(--tertiary);
+}

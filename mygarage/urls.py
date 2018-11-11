@@ -22,5 +22,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('changemode/<mode>/', views.changemode, name='changemode'),
+
+    path('colors/', views.Colors.as_view(),name='colors'),
+    path('setcolor/<int:id>/', views.setColor, name='setcolor'),
+    path('setrandomcolors/', views.setRandomColor,name='setrandomcolors'),
     path('', views.CardList.as_view(),name='home'),
 ]

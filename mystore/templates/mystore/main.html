@@ -7,9 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="CSS/mygarage.css" type="text/css">
   <link rel="stylesheet" href="{% static "CSS/mygarage.css" %}" type="text/css">
+  <link rel="stylesheet" href="{% static "CSS/custom.css" %}" type="text/css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
   <title>{% block title %}myGarage{% endblock title %}</title>
-</head>
+  <style  type="text/css">body{--tertiary: #{{ request.session.colors.tertiary }};--primary: #{{ request.session.colors.primary }};--secondary: #{{ request.session.colors.secondary }} }</style>
+  {% block morestyles %}
+  {% endblock morestyles %}
 
 <body>
 
@@ -19,7 +22,7 @@
       <div class="row bg-primary p-1">
 
         <div class="col-12 col-sm-12 ml-12 col-md-3 col-lg-3 p-0" style="">
-          <h2 class=""><i class="fa fa-box-open p-1"></i><small class="text-muted">my</small>Garage</h2>
+          <h2><i class="fa fa-box-open p-1"></i><small class="text-muted">my</small>Garage</h2>
         </div>
 
         <div class="col-12 col-sm-12 col-lg-6 col-md-5 p-0">
@@ -50,6 +53,29 @@
 
 {% block mainblock %}
 {% endblock mainblock %}
+
+{% block footer %}
+  <div>
+    <div class="container-fluid">
+      <div class="row bg-primary p-1">
+
+        <div class="col-12 col-sm-12 col-md-1 col-lg-1 p-0">
+        </div>
+
+
+        <div class="col-12 col-sm-12 col-md-5 col-lg-4 p-0" style="">
+          <h6><small><a href="#">colors</a></small></h6>
+        </div>
+
+
+        <div class="col-12 col-sm-12 col-md-6 col-lg-7 p-0">
+          <h6><small><a href="{% url 'colors' %}">colors</a></small></h6>
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endblock footer %}
 
 
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="   crossorigin="anonymous"></script>

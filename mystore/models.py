@@ -5,23 +5,61 @@ from django.dispatch import receiver
 from django.db.models import Q
 from django.db.models import Value
 from django.db.models.functions import Replace
+from django.contrib.auth.models import User
+from random import randint
+
 
 # Create your models here.
-class Layer(models.Model):
-    #Layer for your storage - garages, shalves, boxes and other
-    #Example:
-    # 1 - "the garage"
-    # 2 - "shalves"
-    # 3 - "storages" (boxes, bags etc.)
-    # 4 - "things" (clothes, toys, bikes, tools etc.)
+class ColorPalette(models.Model):
+    primary = models.CharField(max_length=64)
+    secondary = models.CharField(max_length=64)
+    tertiary = models.CharField(max_length=64)
 
-    level = models.IntegerField()
-    name = models.CharField(max_length=64)
+    def get_palette(p):
+        return {'primary':p.primary,'secondary':p.secondary,'tertiary':p.tertiary}
 
-    class Meta:
-        ordering = ['level']
-    def __str__(self):
-        return self.name
+
+    def get_user_palette(user):
+        p = None
+        if user.is_authenticated:
+            try:
+                p = Profile.objects.get(user = user).color_palette
+            except: None;
+        if not p:
+            count = ColorPalette.objects.all().count()
+            random_index = randint(0, count - 1)
+            p = ColorPalette.objects.all()[random_index]
+        if p:
+            return ColorPalette.get_palette(p)
+        else:
+            return {'primary':'f5ffc3','secondary':'612147','tertiary':'7dd8c7'}
+
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
+    color_palette = models.OneToOneField('ColorPalette', null=True, blank=True, on_delete=models.SET_NULL)
+
+    def clear_palette(user):
+        if user.is_authenticated:
+            try:
+                pf = Profile.objects.get(user=user)
+                pf.color_palette = None
+                pf.save()
+            except:
+                None;
+        return
+
+    def save_palette(user, palette):
+        if user.is_authenticated:
+            try:
+                pf, created = Profile.objects.get_or_create(user=user)
+                pf.color_palette = palette
+                pf.save()
+            except:
+                None;
+        return
+
 
 class Item(models.Model):
     #Items - clothes, toys, bikes, tools and what do you store in your garage?
@@ -29,7 +67,6 @@ class Item(models.Model):
     #Bags, boxes, shalves are items too :) and the garage too :)))
     name = models.CharField(max_length=64)
     text = models.CharField(max_length=1024, default='', blank=True, verbose_name='Text')
-    layer = models.ForeignKey('Layer', on_delete=models.SET_NULL, null=True, verbose_name='Layer of item')
     number_suffix = models.CharField(max_length=64, default='', blank=True,verbose_name='Suffix of number')
     type = models.ForeignKey('Type', on_delete=models.SET_NULL, null=True, verbose_name='Type of item')
     place = models.ForeignKey('Item', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Where is Item?')
@@ -196,3 +233,4 @@ def create_root_path(sender, instance, created, **kwargs):
     # 89- "art history", is_storage = False, root = "art & photos"
     # ...
     # ---------------------------------
+import mystore.signals
