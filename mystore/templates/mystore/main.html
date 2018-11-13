@@ -35,13 +35,16 @@
         </div>
 
         <div class="col-12 col-sm-12 col-lg-3 col-md-4 p-0">
-          <form class="form-inline mt-1 mb-0">
+          <form class="form-inline mt-1 mb-0" id="searchform" action="{% url 'home' %}" method="get" accept-charset="utf-8">
             <div class="input-group" style="width:100%">
-              <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Search">
-              <div class="input-group-append"><button class="btn btn-secondary" type="button"><i class="fas fa-search"></i></button></div>
+              <input type="text" class="form-control" id="searchbox" name="text">
+              <div class="input-group-append"><button class="btn btn-secondary" type="submit" ><i class="fas fa-search"></i></button></div>
             </div>
           </form>
         </div>
+
+
+
 
       </div>
     </div>
@@ -64,12 +67,12 @@
 
 
         <div class="col-12 col-sm-12 col-md-5 col-lg-4 p-0" style="">
-          <h6><small><a href="#">colors</a></small></h6>
+          <h6><small><a href="#">{{ request.GET.urlencode }}</a></small></h6>
         </div>
 
 
         <div class="col-12 col-sm-12 col-md-6 col-lg-7 p-0">
-          <h6><small><a href="{% url 'colors' %}">colors</a></small></h6>
+          <h6><small><a href="{% url 'colors' %}?{{ request.GET.urlencode }}">colors</a></small></h6>
         </div>
 
       </div>

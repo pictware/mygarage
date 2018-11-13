@@ -15,9 +15,9 @@
             <div class="card  h-100" style = "--primary:#{{ item.primary }};--secondary:#{{ item.secondary }};--tertiary:#{{ item.tertiary }}; overflow: hidden">
 
               <div class="card-body p-1 bg-primary">
-                <a style="width:64px" class="btn btn-secondary mt-1 mr-1" href="#" ><i class="fas fa-cat fa-2x py-0"></i></a>
+                <a style="width:64px" class="btn btn-secondary mt-1 mr-1" href="{% url "setcolor" item.id %}?{{ request.GET.urlencode }}" ><i class="fas fa-cat fa-2x py-0"></i></a>
 
-                <a href="#" class="card-link">
+                <a href="{% url "setcolor" item.id %}?{{ request.GET.urlencode }}" class="card-link">
                   <h5 class="card-title">{% lorem 1 w %} {{ item.id }}</h5>
                 </a>
                 <p class="card-subtitle text-muted">{% lorem 3 w %}</p>
@@ -26,13 +26,13 @@
                 <p class="card-text text-justify"><small>{% lorem 12 w %}</small></p>
               </div>
               <div class="card-body p-1 folder-background" >
-                <a href="#">
+                <a href="{% url "setcolor" item.id %}?{{ request.GET.urlencode }}">
                   <i class="fas fa-crown py-0 px-1"></i>
                   <small>{% lorem 1 w %}</small>
                 </a>
               </div>
               <div class="card-footer text-muted text-nowrap px-1">
-                <a href="{% url "setcolor" item.id %}">
+                <a href="{% url "setcolor" item.id %}?{{ request.GET.urlencode }}">
                   <i class="far fa-save py-0 px-1"></i>SAVE
                 </a>
               </div>
@@ -44,9 +44,9 @@
       {% endif %}
     {% endfor %}
       <div class="col-12 px-1 my-2">
-          <h6><a class="btn btn-secondary" href="{% url 'colors' %}">more...</a>
-              <a class="btn btn-secondary" href="{% url 'setrandomcolors' %}">set random</a>
-              <a class="btn btn-link" href="{% url 'home' %}">cancel</a>
+          <h6><a class="btn btn-secondary" href="{% url 'colors' %}?{{ request.GET.urlencode }}">more...</a>
+              <a class="btn btn-secondary" href="{% url 'setrandomcolors' %}?{{ request.GET.urlencode }}">set random</a>
+              <a class="btn btn-link" href="{% url 'home' %}?{{ request.GET.urlencode }}">cancel</a>
           </h6>
       </div>
     </div>

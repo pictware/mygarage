@@ -71,6 +71,7 @@ class Item(models.Model):
     type = models.ForeignKey('Type', on_delete=models.SET_NULL, null=True, verbose_name='Type of item')
     place = models.ForeignKey('Item', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Where is Item?')
     place_path = models.CharField(max_length=1024, default='', blank=True,verbose_name='Place tree path')
+    finder = models.CharField(max_length=4096, default='', blank=True, verbose_name='String for finder, autocomplete')
 
     class Meta:
         ordering = ['place_path']
@@ -94,7 +95,7 @@ class Item(models.Model):
     def full_place(self, wbr=False):
         ret = ''
         i = self
-        iterations_count = getattr(settings, 'MYGARAGE_PLACE_MAX_ITERATIONS', 2)
+        iterations_count = getattr(settings, 'MYGARAGE_PLACE_MAX_ITERATIONS', 1)
         place_separator = getattr(settings, 'MYGARAGE_PLACE_SEPARATOR', '\\')
         while i.place and iterations_count > 0:
             ret = i.place.full_name() + ((place_separator + ('<wbr>' if wbr else '')) if ret !='' else '') + ret
@@ -118,6 +119,8 @@ def set_place_path(sender, instance, **kwargs):
             instance.place_path = path_format % (instance.id)
         Item.objects.filter(~Q(id=instance.id)).filter(place_path__startswith=old_instance.place_path).\
         update(place_path=Replace('place_path', Value(old_instance.place_path),Value(instance.place_path)))
+
+        instance.finder = '%s %s' % (instance.full_name().lower(), instance.full_text().lower())
 
 @receiver(post_save, sender=Item)
 def create_place_path(sender, instance, created, **kwargs):

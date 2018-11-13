@@ -13,9 +13,9 @@
             </h5>
           </div>
           <div class="float-right" style="display:inline-block">
-            <a href="{% url "changemode" "list" %}" class="float-right"><i class="fas fa-list px-1" style="vertical-align: middle"></i></a>
-            <a href="{% url "changemode" "nophoto" %}" class="float-right"><i class="fas fa-grip-horizontal px-1" style="vertical-align: middle"></i></a>
-            <a href="{% url "changemode" "photo" %}" class="float-right"><i class="far fa-images px-1" style="vertical-align: middle"></i></a>
+            <a href="{% url "changemode" "list" %}?{{ request.GET.urlencode }}" class="float-right"><i class="fas fa-list px-1" style="vertical-align: middle"></i></a>
+            <a href="{% url "changemode" "nophoto" %}?{{ request.GET.urlencode }}" class="float-right"><i class="fas fa-grip-horizontal px-1" style="vertical-align: middle"></i></a>
+            <a href="{% url "changemode" "photo" %}?{{ request.GET.urlencode }}" class="float-right"><i class="far fa-images px-1" style="vertical-align: middle"></i></a>
           </div>
 
       </div>
