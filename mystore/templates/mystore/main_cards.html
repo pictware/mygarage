@@ -28,7 +28,7 @@
                     <small>
                       <!-- <a href="#" class=""><i class="fas fa-list px-1" style="vertical-align: middle"></i></a> -->
                       <a href="#" class="float-left"><i class="fas fa-plus m-0 px-1"></i></a>
-                      <a href="#" class="float-left"><i class="far fa-folder-open m-0 px-1"></i></a>
+                      <a href="?itemcontent={{ item.id }}" class="float-left"><i class="far fa-folder-open m-0 px-1"></i></a>
                       <!-- <a class="btn-secondary float-left" href="#" ><i class="fas fa-shoe-prints" style="vertical-align: middle"></i></a> -->
                     </small>
                   </div>
@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="card-footer text-muted text-nowrap px-1{% if item.type.is_storage %} folder-background{% endif %}">
-                  <small><a href="#">
+                  <small><a href="?path={{ item.id }}">
                       <div style="text-overflow: ellipsis; overflow: hidden; ">
                         <i class="fas fa-map-marker-alt py-0 px-1"></i>{{ item.full_place }}
                       </div>

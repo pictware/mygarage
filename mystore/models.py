@@ -7,7 +7,8 @@ from django.db.models import Value
 from django.db.models.functions import Replace
 from django.contrib.auth.models import User
 from random import randint
-
+import operator
+from functools import reduce
 
 # Create your models here.
 class ColorPalette(models.Model):
@@ -38,7 +39,7 @@ class ColorPalette(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
-    color_palette = models.OneToOneField('ColorPalette', null=True, blank=True, on_delete=models.SET_NULL)
+    color_palette = models.ForeignKey('ColorPalette', null=True, blank=True, on_delete=models.SET_NULL)
 
     def clear_palette(user):
         if user.is_authenticated:
@@ -59,6 +60,31 @@ class Profile(models.Model):
             except:
                 None;
         return
+
+class Request(models.Model):
+    #query_text: the GET parameter for seaching
+    #   itemcontent=<int:item__id> contents of this item
+    #   text=<str1+str2+..> text search
+    #   type=<int:type__id> items having strictly this type
+    #   types=<int:type__id> items having this type or subtypes of this type
+    order_index = models.IntegerField(default=0, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, help_text="set User only if it's personal request")
+    query_text = models.CharField(max_length=1024, default='', blank=True, help_text='exs: "text=book+magazine"  "type=4"  "types=4"  "itemcontent=12"')
+    is_up_button = models.BooleanField(default=False, help_text="Is it up button?")
+    icon_class = models.CharField(max_length=64, default='', blank=True, help_text='ex: "fas fa-car"')
+    is_down_link = models.BooleanField(default=False, help_text="Is it down link?")
+    link_text = models.CharField(max_length=64, default='', blank=True)
+
+    class Meta:
+        ordering = ['user', 'order_index', 'link_text']
+
+    def get_links():
+        q = Request.objects.filter(is_down_link=True).order_by('order_index','link_text')
+        return q
+
+    def get_buttons():
+        q = Request.objects.filter(is_up_button=True).order_by('order_index','id')
+        return q
 
 
 class Item(models.Model):
@@ -106,6 +132,22 @@ class Item(models.Model):
     def full_text(self):
         ret = self.text
         return ret
+
+    def get_place_tree(item_id):
+        try:
+            place_path = Item.objects.get(id=item_id).place_path
+            place_parts = place_path.split('.')
+            if not place_parts: return None
+            place_list = []
+            path = ''
+            for p in place_parts:
+                path = (path + '.%s' % p) if path != '' else p
+                place_list.append(path)
+            if not place_list: return None
+            return Item.objects.filter( reduce(operator.or_, (Q(place_path=q) for q in place_list)  ) )
+        except:
+            return None
+
 
 @receiver(pre_save, sender=Item)
 def set_place_path(sender, instance, **kwargs):
